@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convertidor de Libras</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Sora:wght@700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+/* ══════════════════════════════════════
+   DESIGN TOKENS
+══════════════════════════════════════ */
+:root {
+    --primary: #4f46e5; --primary-light: #818cf8; --primary-dark: #3730a3;
+    --primary-glow: rgba(79,70,229,0.22); --secondary: #64748b;
+    --success: #059669; --success-light: #34d399; --danger: #dc2626;
+    --danger-light: #f87171; --warning: #d97706; --warning-light: #fbbf24;
+    --info: #0891b2; --info-light: #22d3ee;
+    --background: #eef1fa; --surface: #ffffff;
+    --surface-elevated: #f6f7fc; --border: #dde2ef; --border-light: #eaedfa;
+    --text-main: #16133e; --text-secondary: #44537a; --text-light: #8897b8;
+    --shadow-sm: 0 1px 4px rgba(22,19,62,0.07), 0 1px 2px rgba(22,19,62,0.04);
+    --shadow-md: 0 4px 16px rgba(22,19,62,0.09), 0 2px 4px rgba(22,19,62,0.04);
+    --shadow-lg: 0 12px 32px rgba(22,19,62,0.11), 0 4px 8px rgba(22,19,62,0.05);
+    --shadow-xl: 0 24px 56px rgba(22,19,62,0.13), 0 8px 16px rgba(22,19,62,0.06);
+    --radius-sm: 10px; --radius-md: 14px; --radius-lg: 18px; --radius-xl: 22px; --radius-full: 9999px;
+}
+
+/* ══════════════════════════════════════
+   BASE
+══════════════════════════════════════ */
+* { box-sizing:border-box; -webkit-tap-highlight-color:transparent; margin:0; padding:0; }
+body {
+    font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif;
+    background-color:var(--background);
+    background-image: radial-gradient(circle at 20% 0%, rgba(79,70,229,0.04) 0%, transparent 60%),
+                      radial-gradient(circle at 80% 100%, rgba(99,102,241,0.03) 0%, transparent 60%);
+    color:var(--text-main); padding-bottom:2rem; min-height:100vh; -webkit-font-smoothing:antialiased;
+}
+
+/* ══════════════════════════════════════
+   HEADER
+══════════════════════════════════════ */
+header {
+    background: #1a0e5e;
+    background-image: linear-gradient(135deg, #1a0e5e 0%, #3730a3 45%, #4f46e5 100%);
+    padding:0.9rem 1.4rem;
+    position:sticky; top:0; z-index:100;
+    box-shadow: 0 4px 24px rgba(55,48,163,0.45);
+    display:flex; justify-content:space-between; align-items:center;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+header::after {
+    content:'';
+    position:absolute; inset:0;
+    background-image: radial-gradient(circle at 70% 50%, rgba(165,180,252,0.08) 0%, transparent 55%);
+    pointer-events:none;
+}
+h1 {
+    margin:0; font-family:'Sora','Plus Jakarta Sans',sans-serif;
+    font-size:1.1rem; font-weight:800; color:#fff;
+    display:flex; align-items:center; gap:10px; letter-spacing:-0.4px;
+    position:relative; z-index:1;
+}
+h1 i { font-size:1.1rem; filter:drop-shadow(0 0 8px rgba(165,180,252,0.6)); }
+h1 .logo-badge {
+    font-size:0.55rem; font-weight:700; letter-spacing:0.8px;
+    background:rgba(255,255,255,0.12); color:rgba(255,255,255,0.8);
+    padding:2px 7px; border-radius:var(--radius-full);
+    border:1px solid rgba(255,255,255,0.15);
+    align-self:center; margin-top:1px;
+}
+
+/* ══════════════════════════════════════
+   LAYOUT
+══════════════════════════════════════ */
+main { padding:1rem; max-width:800px; margin:0 auto; }
+.view-section { display:block; animation:fadeInUp 0.38s cubic-bezier(0.16,1,0.3,1); }
+@keyframes fadeInUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+
+/* ══════════════════════════════════════
+   CARDS
+══════════════════════════════════════ */
+.card {
+    background:var(--surface); border-radius:var(--radius-lg);
+    box-shadow:var(--shadow-md); padding:1.25rem;
+    margin-bottom:1.1rem; border:1px solid var(--border-light);
+    transition:box-shadow 0.2s, transform 0.2s;
+}
+.card:hover { box-shadow:var(--shadow-lg); }
+.card h3 {
+    margin-top:0; font-size:0.8rem; color:var(--text-secondary);
+    margin-bottom:1rem; font-weight:800;
+    text-transform:uppercase; letter-spacing:0.8px;
+    display:flex; align-items:center; gap:8px;
+}
+.card h3::before {
+    content:''; display:inline-block; width:4px; height:16px;
+    background:linear-gradient(180deg, var(--success), var(--success-light));
+    border-radius:2px; flex-shrink:0;
+}
+
+/* ══════════════════════════════════════
+   FORMS
+══════════════════════════════════════ */
+.form-group { margin-bottom:0.55rem; position:relative; }
+.form-group label { display:block; margin-bottom:0.28rem; font-size:0.72rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.6px; }
+.form-control {
+    width:100%; padding:0.62rem 0.85rem; border:1.5px solid var(--border);
+    border-radius:var(--radius-sm); font-size:0.88rem; font-family:'Plus Jakarta Sans',inherit;
+    background:var(--surface-elevated); transition:all 0.2s; color:var(--text-main);
+}
+.form-control:focus { outline:none; border-color:var(--primary-light); background:var(--surface); box-shadow:0 0 0 3px var(--primary-glow); }
+.form-control::placeholder { color:var(--text-light); }
+.form-row { display:grid; gap:10px; margin-bottom:0.5rem; }
+.form-row.cols-2 { grid-template-columns:1fr 1fr; }
+.form-row.cols-3 { grid-template-columns:1fr 1fr 1fr; }
+
+/* ══════════════════════════════════════
+   BUTTONS
+══════════════════════════════════════ */
+.btn {
+    padding:0.7rem 1.1rem; border-radius:var(--radius-sm); border:none;
+    font-weight:700; cursor:pointer; display:inline-flex; align-items:center;
+    justify-content:center; gap:0.45rem; font-size:0.84rem; width:100%;
+    transition:all 0.2s cubic-bezier(0.4,0,0.2,1); letter-spacing:-0.1px;
+    font-family:'Plus Jakarta Sans',sans-serif;
+}
+.btn:hover { transform:translateY(-1px); filter:brightness(1.08); }
+.btn:active { transform:scale(0.97) translateY(0); filter:none; }
+.btn-sm { padding:0.38rem 0.75rem; font-size:0.72rem; width:auto; border-radius:8px; font-weight:700; }
+.btn-primary {
+    background:linear-gradient(135deg, #4f46e5, #818cf8);
+    color:white; box-shadow:0 2px 10px rgba(79,70,229,0.35), 0 0 0 1px rgba(255,255,255,0.05) inset;
+}
+.btn-success {
+    background:linear-gradient(135deg, #059669, #34d399);
+    color:white; box-shadow:0 2px 10px rgba(5,150,105,0.3);
+}
+.btn-danger {
+    background:linear-gradient(135deg, #dc2626, #f87171);
+    color:white; box-shadow:0 2px 10px rgba(220,38,38,0.3);
+}
+.btn-outline {
+    background:var(--surface); border:1.5px solid var(--border);
+    color:var(--text-secondary); box-shadow:none;
+}
+.btn-outline:hover { border-color:var(--primary-light); color:var(--primary); background:rgba(79,70,229,0.04); }
+
+/* ══════════════════════════════════════
+   VENTA / CONVERTIDOR MODULE
+══════════════════════════════════════ */
+.venta-preview { display:flex; justify-content:space-between; align-items:center; padding:1rem; background:linear-gradient(135deg,rgba(79,70,229,0.04),rgba(79,70,229,0.08)); border-radius:var(--radius-md); border:1px solid rgba(79,70,229,0.08); margin-top:0.75rem; }
+.venta-list-container { max-height:400px; overflow-y:auto; }
+.venta-item { display:flex; justify-content:space-between; align-items:center; padding:0.85rem 0.6rem; border-bottom:1px solid var(--border-light); transition:background 0.15s; border-radius:var(--radius-sm); }
+.venta-item:hover { background:rgba(5,150,105,0.025); border-radius:var(--radius-sm); }
+.venta-item:last-child { border-bottom:none; }
+.counter-total-card {
+    background:linear-gradient(135deg, #059669, #10b981, #34d399); color:white;
+    padding:1.3rem; border-radius:var(--radius-xl); text-align:center;
+    box-shadow:0 6px 24px rgba(5,150,105,0.35); position:relative; overflow:hidden;
+}
+.counter-total-card::before { content:''; position:absolute; top:-50%; right:-30%; width:200px; height:200px; border-radius:50%; background:rgba(255,255,255,0.08); pointer-events:none; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width:5px; height:5px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+::-webkit-scrollbar-thumb:hover { background:var(--text-light); }
+
+/* Empty states */
+.empty-state { text-align:center; padding:2.5rem 1rem; color:var(--text-light); }
+.empty-state i { font-size:2.2rem; margin-bottom:0.6rem; display:block; opacity:0.35; }
+.empty-state p { font-size:0.85rem; font-weight:600; }
+
+.section-topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; }
+
+@media (min-width:600px) {
+    .form-row.cols-3 { grid-template-columns:1fr 1fr 1fr; }
+}
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1><i class="fa-solid fa-scale-balanced"></i> Convertidor <span class="logo-badge">Libras</span></h1>
+    </header>
+
+    <main>
+        <!-- VENTA / CONVERTIDOR DE LIBRAS -->
+        <section id="venta-section" class="view-section active">
+            
+            <div class="card">
+                <h3><i class="fa-solid fa-scale-balanced" style="color:var(--success);font-size:0.9rem"></i> Convertidor de Libras</h3>
+                <div class="form-row cols-3">
+                    <div class="form-group"><label>Precio (C$)</label><input type="number" id="venta-price" class="form-control" min="0" step="0.01" oninput="app.calculateCurrentTotal()" placeholder="0.00"></div>
+                    <div class="form-group"><label>Libras</label><input type="number" id="venta-lb" class="form-control" min="0" step="0.01" oninput="app.calculateCurrentTotal()" placeholder="0.00"></div>
+                    <div class="form-group"><label>Onzas</label><input type="number" id="venta-oz" class="form-control" min="0" max="15" step="1" oninput="app.calculateCurrentTotal()" placeholder="0"></div>
+                </div>
+                <div class="venta-preview" id="venta-preview">
+                    <span style="font-size:0.68rem;color:rgba(79,70,229,0.7);text-transform:uppercase;font-weight:700;letter-spacing:1px">Total Actual</span>
+                    <span id="venta-current-total" style="font-size:1.4rem;font-weight:900;color:var(--primary);letter-spacing:-0.5px;font-family:'DM Mono',monospace">C$ 0</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:0.75rem">
+                    <button type="button" class="btn btn-outline" onclick="app.resetVentaFields()"><i class="fa-solid fa-rotate-left"></i> Reiniciar</button>
+                    <button type="button" class="btn btn-primary" onclick="app.addVentaItem()"><i class="fa-solid fa-plus"></i> Agregar</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem">
+                    <h3 style="margin:0"><i class="fa-solid fa-list" style="color:var(--secondary);font-size:0.85rem"></i> <span id="venta-counter">0 Registros</span></h3>
+                    <button type="button" class="btn btn-outline btn-sm" onclick="app.clearVentaList()"><i class="fa-solid fa-trash"></i> Limpiar</button>
+                </div>
+                <div class="venta-list-container" id="venta-list">
+                    <div class="empty-state">
+                        <i class="fa-solid fa-box-open"></i>
+                        <p>No hay productos agregados</p>
+                    </div>
+                </div>
+                <div class="counter-total-card" id="venta-total-card" style="margin-top:1rem;display:none">
+                    <div style="font-size:0.68rem;color:rgba(255,255,255,0.75);text-transform:uppercase;letter-spacing:1.2px;font-weight:700">Total General</div>
+                    <div id="venta-grand-total" style="font-size:1.6rem;font-weight:900;color:white;letter-spacing:-1px;margin-top:6px;font-family:'DM Mono',monospace">C$ 0</div>
+                </div>
+                <button type="button" class="btn btn-success" style="margin-top:1rem" onclick="app.captureScreen()"><i class="fa-solid fa-camera"></i> Captura</button>
+            </div>
+        </section>
+    </main>
+
+    <script>
+    const app = {
+        ventaItems: [],
+
+        init() {
+            this.calculateCurrentTotal();
+            this.renderVentaList();
+        },
+
+        calculateCurrentTotal() {
+            const price = parseFloat(document.getElementById('venta-price').value) || 0;
+            const lb = parseFloat(document.getElementById('venta-lb').value) || 0;
+            const oz = parseFloat(document.getElementById('venta-oz').value) || 0;
+
+            // 1 libra = 16 onzas
+            const totalLb = lb + (oz / 16);
+            const total = totalLb * price;
+
+            // Redondeo a 0 decimales usando Math.round
+            document.getElementById('venta-current-total').textContent = `C$ ${Math.round(total)}`;
+        },
+
+        resetVentaFields() {
+            document.getElementById('venta-price').value = '';
+            document.getElementById('venta-lb').value = '';
+            document.getElementById('venta-oz').value = '';
+            this.calculateCurrentTotal();
+        },
+
+        addVentaItem() {
+            const price = parseFloat(document.getElementById('venta-price').value) || 0;
+            const lb = parseFloat(document.getElementById('venta-lb').value) || 0;
+            const oz = parseFloat(document.getElementById('venta-oz').value) || 0;
+
+            if (price <= 0 || (lb <= 0 && oz <= 0)) {
+                alert('Por favor ingrese un precio y un peso válidos.');
+                return;
+            }
+
+            const totalLb = lb + (oz / 16);
+            const total = totalLb * price;
+
+            const item = {
+                id: Date.now(),
+                price: price,
+                lb: lb,
+                oz: oz,
+                totalLb: totalLb,
+                total: Math.round(total) // Redondeo aplicado aquí también
+            };
+
+            this.ventaItems.push(item);
+            this.renderVentaList();
+            this.resetVentaFields();
+        },
+
+        removeVentaItem(id) {
+            this.ventaItems = this.ventaItems.filter(item => item.id !== id);
+            this.renderVentaList();
+        },
+
+        renderVentaList() {
+            const listEl = document.getElementById('venta-list');
+            const counterEl = document.getElementById('venta-counter');
+            const totalCardEl = document.getElementById('venta-total-card');
+            const grandTotalEl = document.getElementById('venta-grand-total');
+
+            if (this.ventaItems.length === 0) {
+                listEl.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fa-solid fa-box-open"></i>
+                        <p>No hay productos agregados</p>
+                    </div>
+                `;
+                counterEl.textContent = '0 Registros';
+                totalCardEl.style.display = 'none';
+                return;
+            }
+
+            counterEl.textContent = `${this.ventaItems.length} Registro(s)`;
+            totalCardEl.style.display = 'block';
+
+            let grandTotal = 0;
+            listEl.innerHTML = this.ventaItems.map(item => {
+                grandTotal += item.total;
+                const weightText = item.oz > 0 ? `${item.lb} lb ${item.oz} oz` : `${item.lb} lb`;
+                
+                return `
+                    <div class="venta-item">
+                        <div class="item-info" style="flex:1">
+                            <h4 style="margin:0 0 0.2rem 0;font-size:0.9rem;color:var(--text-main);font-weight:700;">C$ ${item.price.toFixed(2)} / lb</h4>
+                            <p style="margin:0;font-size:0.77rem;color:var(--text-light);font-weight:500;">
+                                ${weightText} <span style="opacity:0.6">(${item.totalLb.toFixed(4)} lb total)</span>
+                            </p>
+                        </div>
+                        <div style="text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:5px;">
+                            <strong style="color:var(--success);font-family:'DM Mono',monospace;font-size:1rem;">C$ ${item.total}</strong>
+                            <button onclick="app.removeVentaItem(${item.id})" style="border:none;background:none;color:var(--danger);cursor:pointer;font-size:0.9rem;">
+                                <i class="fa-solid fa-times-circle"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Total general redondeado a 0 decimales
+            grandTotalEl.textContent = `C$ ${Math.round(grandTotal)}`;
+        },
+
+        clearVentaList() {
+            if (this.ventaItems.length === 0) return;
+            if (confirm('¿Está seguro de limpiar toda la lista?')) {
+                this.ventaItems = [];
+                this.renderVentaList();
+            }
+        },
+
+        async captureScreen() {
+            const targetElement = document.querySelector('main');
+            if (!window.html2canvas) {
+                alert('Librería de captura no cargada.');
+                return;
+            }
+            try {
+                const canvas = await html2canvas(targetElement, {
+                    backgroundColor: getComputedStyle(document.body).backgroundColor,
+                    scale: 2
+                });
+                const link = document.createElement('a');
+                link.download = `convertidor_libras_${Date.now()}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            } catch (e) {
+                console.error(e);
+                alert('Error al generar la captura.');
+            }
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => app.init());
+    </script>
+</body>
+</html>
