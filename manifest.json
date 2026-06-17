@@ -1,0 +1,22 @@
+{
+  "name": "Convertidor de Libras",
+  "short_name": "Convertidor",
+  "description": "Calculadora de venta de libras y onzas",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#eef1fa",
+  "theme_color": "#1a0e5e",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
